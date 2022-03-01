@@ -19,10 +19,12 @@ Apache 2 License
 Software Revision C, 03/01/2022
 
 Verified working on: 
+
 Python 2.7, 3.8.
 Windows 8.1, 10 64-bit
 Raspberry Pi Buster 
 (no Mac testing yet)
+
 ########################  
 
 ########################### Python module installation instructions, all OS's
