@@ -6,7 +6,7 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision C, 03/01/2022
+Software Revision D, 03/13/2022
 
 Verified working on: Python 2.7, 3.8 for Windows 8.1, 10 64-bit and Raspberry Pi Buster (no Mac testing yet).
 '''
@@ -462,6 +462,15 @@ class ProgramOfTimeScheduledEvents_ReubenPython2and3Class(Frame): #Subclass the 
         self.MostRecentDataDict = dict([("EventsToFireQueue", self.EventsToFireQueue), ("Time", self.CurrentTime_CalculatedFromMainThread)])
 
         return self.MostRecentDataDict
+    ##########################################################################################################
+    ##########################################################################################################
+
+    ##########################################################################################################
+    ##########################################################################################################
+    def UpdateProgramDict(self, NewProgramDict):
+
+        self.Program_Dict = deepcopy(NewProgramDict)
+        print("UpdateProgramDict Event fired! Program_Dict = " + str(self.Program_Dict))
     ##########################################################################################################
     ##########################################################################################################
 
