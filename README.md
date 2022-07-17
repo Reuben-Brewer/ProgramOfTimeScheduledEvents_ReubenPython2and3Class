@@ -1,4 +1,4 @@
-########################  
+###########################
 
 ProgramOfTimeScheduledEvents_ReubenPython2and3Class
 
@@ -17,7 +17,7 @@ www.reubotics.com
 
 Apache 2 License
 
-Software Revision D, 03/13/2022
+Software Revision E, 07/16/2022
 
 Verified working on: 
 
@@ -29,16 +29,12 @@ Raspberry Pi Buster
 
 (no Mac testing yet)
 
-########################  
+###########################
 
 ########################### Python module installation instructions, all OS's
 
-No special Python modules to be installed.
+['future.builtins']
 
 ###########################
 
-########################### Library/driver installation instructions, Windows/Linux/RaspberryPi
 
-No libraries to be installed.
-
-###########################
