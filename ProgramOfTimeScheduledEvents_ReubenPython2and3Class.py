@@ -6,23 +6,28 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision D, 03/13/2022
+Software Revision E, 07/16/2022
 
 Verified working on: Python 2.7, 3.8 for Windows 8.1, 10 64-bit and Raspberry Pi Buster (no Mac testing yet).
 '''
 
 __author__ = 'reuben.brewer'
 
-import os, sys, platform
-import time, datetime
+#########################################################
+import os
+import sys
+import platform
+import time
+import datetime
 import math
 import collections
 from copy import * #for deep_copy of dicts
 import inspect #To enable 'TellWhichFileWereIn'
 import threading
 import traceback
+#########################################################
 
-###############
+#########################################################
 if sys.version_info[0] < 3:
     from Tkinter import * #Python 2
     import tkFont
@@ -31,29 +36,29 @@ else:
     from tkinter import * #Python 3
     import tkinter.font as tkFont #Python 3
     from tkinter import ttk
-###############
+#########################################################
 
-###############
+#########################################################
 if sys.version_info[0] < 3:
     import Queue  # Python 2
 else:
     import queue as Queue  # Python 3
-###############
+#########################################################
 
-###############
+#########################################################
 if sys.version_info[0] < 3:
     from builtins import raw_input as input
 else:
     from future.builtins import input as input
-############### #"sudo pip3 install future" (Python 3) AND "sudo pip install future" (Python 2)
+######################################################### #"sudo pip3 install future" (Python 3) AND "sudo pip install future" (Python 2)
 
-###############
+#########################################################
 import platform
 if platform.system() == "Windows":
     import ctypes
     winmm = ctypes.WinDLL('winmm')
     winmm.timeBeginPeriod(1) #Set minimum timer resolution to 1ms so that time.sleep(0.001) behaves properly.
-###############
+#########################################################
 
 class ProgramOfTimeScheduledEvents_ReubenPython2and3Class(Frame): #Subclass the Tkinter Frame
 
@@ -63,11 +68,16 @@ class ProgramOfTimeScheduledEvents_ReubenPython2and3Class(Frame): #Subclass the 
 
         print("#################### ProgramOfTimeScheduledEvents_ReubenPython2and3Class __init__ starting. ####################")
 
+        #########################################################
+        #########################################################
         self.EXIT_PROGRAM_FLAG = 0
         self.OBJECT_CREATED_SUCCESSFULLY_FLAG = -1
         self.EnableInternal_MyPrint_Flag = 0
         self.MainThread_still_running_flag = 0
+        #########################################################
+        #########################################################
 
+        #########################################################
         #########################################################
         self.CurrentTime_CalculatedFromMainThread = -11111.0
         self.StartingTime_CalculatedFromMainThread = -11111.0
@@ -75,8 +85,10 @@ class ProgramOfTimeScheduledEvents_ReubenPython2and3Class(Frame): #Subclass the 
         self.DataStreamingFrequency_CalculatedFromMainThread = -11111.0
         self.DataStreamingDeltaT_CalculatedFromMainThread = -11111.0
         #########################################################
+        #########################################################
 
-        #################################################
+        #########################################################
+        #########################################################
         self.PlayProgramFromThisStartingIndexIntoEventsList = 0
         self.ProgramCurrentlyRunningFlag = -1
         self.ProgramCurrentlyPausedFlag = -1
@@ -95,15 +107,18 @@ class ProgramOfTimeScheduledEvents_ReubenPython2and3Class(Frame): #Subclass the 
         self.ProgramDictOfListsOfEventTimestampsRelativeToZero = dict()
         self.AllActuators_TimestampInSecondsEventsList = list()
         self.StepThroughProgramPausingBetweenEventsFlag = 0
-        #################################################
+        #########################################################
+        #########################################################
 
-        #################################################
+        #########################################################
+        #########################################################
         self.EventsToFireQueue = Queue.Queue()
-        self.MostRecentDataDict = dict([("EventsToFireQueue", self.EventsToFireQueue), ("Time", self.CurrentTime_CalculatedFromMainThread)])
-        #################################################
+        self.MostRecentDataDict = dict()
+        #########################################################
+        #########################################################
 
-        ##########################################
-        ##########################################
+        #########################################################
+        #########################################################
         if platform.system() == "Linux":
 
             if "raspberrypi" in platform.uname(): #os.uname() doesn't work in windows
@@ -120,153 +135,168 @@ class ProgramOfTimeScheduledEvents_ReubenPython2and3Class(Frame): #Subclass the 
         else:
             self.my_platform = "other"
 
-        print("The OS platform is: " + self.my_platform)
-        ##########################################
-        ##########################################
+        print("ProgramOfTimeScheduledEvents_ReubenPython2and3Class __init__: The OS platform is: " + self.my_platform)
+        #########################################################
+        #########################################################
 
-        ##########################################
-        ##########################################
+        #########################################################
+        #########################################################
         if "GUIparametersDict" in setup_dict:
             self.GUIparametersDict = setup_dict["GUIparametersDict"]
 
-            ##########################################
+            #########################################################
+            #########################################################
             if "USE_GUI_FLAG" in self.GUIparametersDict:
                 self.USE_GUI_FLAG = self.PassThrough0and1values_ExitProgramOtherwise("USE_GUI_FLAG", self.GUIparametersDict["USE_GUI_FLAG"])
             else:
                 self.USE_GUI_FLAG = 0
 
-            print("USE_GUI_FLAG = " + str(self.USE_GUI_FLAG))
-            ##########################################
+            print("ProgramOfTimeScheduledEvents_ReubenPython2and3Class __init__: USE_GUI_FLAG: " + str(self.USE_GUI_FLAG))
+            #########################################################
+            #########################################################
 
-            ##########################################
+            #########################################################
+            #########################################################
             if "root" in self.GUIparametersDict:
                 self.root = self.GUIparametersDict["root"]
-                self.RootIsOwnedExternallyFlag = 1
             else:
-                self.root = None
-                self.RootIsOwnedExternallyFlag = 0
+                print("ProgramOfTimeScheduledEvents_ReubenPython2and3Class __init__: ERROR, must pass in 'root'")
+                return
+            #########################################################
+            #########################################################
 
-            print("RootIsOwnedExternallyFlag = " + str(self.RootIsOwnedExternallyFlag))
-            ##########################################
-
-            ##########################################
-            if "GUI_RootAfterCallbackInterval_Milliseconds" in self.GUIparametersDict:
-                self.GUI_RootAfterCallbackInterval_Milliseconds = int(self.PassThroughFloatValuesInRange_ExitProgramOtherwise("GUI_RootAfterCallbackInterval_Milliseconds", self.GUIparametersDict["GUI_RootAfterCallbackInterval_Milliseconds"], 0.0, 1000.0))
-            else:
-                self.GUI_RootAfterCallbackInterval_Milliseconds = 30
-
-            print("GUI_RootAfterCallbackInterval_Milliseconds = " + str(self.GUI_RootAfterCallbackInterval_Milliseconds))
-            ##########################################
-
-            ##########################################
+            #########################################################
+            #########################################################
             if "EnableInternal_MyPrint_Flag" in self.GUIparametersDict:
                 self.EnableInternal_MyPrint_Flag = self.PassThrough0and1values_ExitProgramOtherwise("EnableInternal_MyPrint_Flag", self.GUIparametersDict["EnableInternal_MyPrint_Flag"])
             else:
                 self.EnableInternal_MyPrint_Flag = 0
 
-            print("EnableInternal_MyPrint_Flag: " + str(self.EnableInternal_MyPrint_Flag))
-            ##########################################
+            print("ProgramOfTimeScheduledEvents_ReubenPython2and3Class __init__: EnableInternal_MyPrint_Flag: " + str(self.EnableInternal_MyPrint_Flag))
+            #########################################################
+            #########################################################
 
-            ##########################################
+            #########################################################
+            #########################################################
             if "PrintToConsoleFlag" in self.GUIparametersDict:
                 self.PrintToConsoleFlag = self.PassThrough0and1values_ExitProgramOtherwise("PrintToConsoleFlag", self.GUIparametersDict["PrintToConsoleFlag"])
             else:
                 self.PrintToConsoleFlag = 1
 
-            print("PrintToConsoleFlag: " + str(self.PrintToConsoleFlag))
-            ##########################################
+            print("ProgramOfTimeScheduledEvents_ReubenPython2and3Class __init__: PrintToConsoleFlag: " + str(self.PrintToConsoleFlag))
+            #########################################################
+            #########################################################
 
-            ##########################################
+            #########################################################
+            #########################################################
             if "NumberOfPrintLines" in self.GUIparametersDict:
                 self.NumberOfPrintLines = int(self.PassThroughFloatValuesInRange_ExitProgramOtherwise("NumberOfPrintLines", self.GUIparametersDict["NumberOfPrintLines"], 0.0, 50.0))
             else:
                 self.NumberOfPrintLines = 10
 
-            print("NumberOfPrintLines = " + str(self.NumberOfPrintLines))
-            ##########################################
+            print("ProgramOfTimeScheduledEvents_ReubenPython2and3Class __init__: NumberOfPrintLines: " + str(self.NumberOfPrintLines))
+            #########################################################
+            #########################################################
 
-            ##########################################
+            #########################################################
+            #########################################################
             if "UseBorderAroundThisGuiObjectFlag" in self.GUIparametersDict:
                 self.UseBorderAroundThisGuiObjectFlag = self.PassThrough0and1values_ExitProgramOtherwise("UseBorderAroundThisGuiObjectFlag", self.GUIparametersDict["UseBorderAroundThisGuiObjectFlag"])
             else:
                 self.UseBorderAroundThisGuiObjectFlag = 0
 
-            print("UseBorderAroundThisGuiObjectFlag: " + str(self.UseBorderAroundThisGuiObjectFlag))
-            ##########################################
+            print("ProgramOfTimeScheduledEvents_ReubenPython2and3Class __init__: UseBorderAroundThisGuiObjectFlag: " + str(self.UseBorderAroundThisGuiObjectFlag))
+            #########################################################
+            #########################################################
 
-            ##########################################
+            #########################################################
+            #########################################################
             if "GUI_ROW" in self.GUIparametersDict:
                 self.GUI_ROW = int(self.PassThroughFloatValuesInRange_ExitProgramOtherwise("GUI_ROW", self.GUIparametersDict["GUI_ROW"], 0.0, 1000.0))
             else:
                 self.GUI_ROW = 0
 
-            print("GUI_ROW = " + str(self.GUI_ROW))
-            ##########################################
+            print("ProgramOfTimeScheduledEvents_ReubenPython2and3Class __init__: GUI_ROW: " + str(self.GUI_ROW))
+            #########################################################
+            #########################################################
 
-            ##########################################
+            #########################################################
+            #########################################################
             if "GUI_COLUMN" in self.GUIparametersDict:
                 self.GUI_COLUMN = int(self.PassThroughFloatValuesInRange_ExitProgramOtherwise("GUI_COLUMN", self.GUIparametersDict["GUI_COLUMN"], 0.0, 1000.0))
             else:
                 self.GUI_COLUMN = 0
 
-            print("GUI_COLUMN = " + str(self.GUI_COLUMN))
-            ##########################################
+            print("ProgramOfTimeScheduledEvents_ReubenPython2and3Class __init__: GUI_COLUMN: " + str(self.GUI_COLUMN))
+            #########################################################
+            #########################################################
 
-            ##########################################
+            #########################################################
+            #########################################################
             if "GUI_PADX" in self.GUIparametersDict:
                 self.GUI_PADX = int(self.PassThroughFloatValuesInRange_ExitProgramOtherwise("GUI_PADX", self.GUIparametersDict["GUI_PADX"], 0.0, 1000.0))
             else:
                 self.GUI_PADX = 0
 
-            print("GUI_PADX = " + str(self.GUI_PADX))
-            ##########################################
+            print("ProgramOfTimeScheduledEvents_ReubenPython2and3Class __init__: GUI_PADX: " + str(self.GUI_PADX))
+            #########################################################
+            #########################################################
 
-            ##########################################
+            #########################################################
+            #########################################################
             if "GUI_PADY" in self.GUIparametersDict:
                 self.GUI_PADY = int(self.PassThroughFloatValuesInRange_ExitProgramOtherwise("GUI_PADY", self.GUIparametersDict["GUI_PADY"], 0.0, 1000.0))
             else:
                 self.GUI_PADY = 0
 
-            print("GUI_PADY = " + str(self.GUI_PADY))
-            ##########################################
+            print("ProgramOfTimeScheduledEvents_ReubenPython2and3Class __init__: GUI_PADY: " + str(self.GUI_PADY))
+            #########################################################
+            #########################################################
 
-            ##########################################
+            #########################################################
+            #########################################################
             if "GUI_ROWSPAN" in self.GUIparametersDict:
                 self.GUI_ROWSPAN = int(self.PassThroughFloatValuesInRange_ExitProgramOtherwise("GUI_ROWSPAN", self.GUIparametersDict["GUI_ROWSPAN"], 0.0, 1000.0))
             else:
-                self.GUI_ROWSPAN = 0
+                self.GUI_ROWSPAN = 1
 
-            print("GUI_ROWSPAN = " + str(self.GUI_ROWSPAN))
-            ##########################################
+            print("ProgramOfTimeScheduledEvents_ReubenPython2and3Class __init__: GUI_ROWSPAN: " + str(self.GUI_ROWSPAN))
+            #########################################################
+            #########################################################
 
-            ##########################################
+            #########################################################
+            #########################################################
             if "GUI_COLUMNSPAN" in self.GUIparametersDict:
                 self.GUI_COLUMNSPAN = int(self.PassThroughFloatValuesInRange_ExitProgramOtherwise("GUI_COLUMNSPAN", self.GUIparametersDict["GUI_COLUMNSPAN"], 0.0, 1000.0))
             else:
-                self.GUI_COLUMNSPAN = 0
+                self.GUI_COLUMNSPAN = 1
 
-            print("GUI_COLUMNSPAN = " + str(self.GUI_COLUMNSPAN))
-            ##########################################
+            print("ProgramOfTimeScheduledEvents_ReubenPython2and3Class __init__: GUI_COLUMNSPAN: " + str(self.GUI_COLUMNSPAN))
+            #########################################################
+            #########################################################
 
-            ##########################################
+            #########################################################
+            #########################################################
             if "GUI_STICKY" in self.GUIparametersDict:
                 self.GUI_STICKY = str(self.GUIparametersDict["GUI_STICKY"])
             else:
                 self.GUI_STICKY = "w"
 
-            print("GUI_STICKY = " + str(self.GUI_STICKY))
-            ##########################################
+            print("ProgramOfTimeScheduledEvents_ReubenPython2and3Class __init__: GUI_STICKY: " + str(self.GUI_STICKY))
+            #########################################################
+            #########################################################
 
         else:
             self.GUIparametersDict = dict()
             self.USE_GUI_FLAG = 0
             print("ProgramOfTimeScheduledEvents_ReubenPython2and3Class __init__: No GUIparametersDict present, setting USE_GUI_FLAG = " + str(self.USE_GUI_FLAG))
 
-        print("GUIparametersDict = " + str(self.GUIparametersDict))
-        ##########################################
-        ##########################################
+        #print("GUIparametersDict = " + str(self.GUIparametersDict))
+        #########################################################
+        #########################################################
 
-        ##########################################
+        #########################################################
+        #########################################################
         if "Program_Dict" in setup_dict:
             self.Program_Dict = setup_dict["Program_Dict"]
 
@@ -274,9 +304,11 @@ class ProgramOfTimeScheduledEvents_ReubenPython2and3Class(Frame): #Subclass the 
             self.Program_Dict = dict([("ListOfEventDicts", [{"DeltaTsec_ToFireThisEventAfterPriorEvent":1.000, "Actuator":"DUMMY", "ValueToBeSet": 1, "StringToPrint": "DUMMY EVENT 1"}, {"DeltaTsec_ToFireThisEventAfterPriorEvent":2.000, "Actuator":"DUMMY", "ValueToBeSet": 2, "StringToPrint": "DUMMY EVENT 2"}, {"DeltaTsec_ToFireThisEventAfterPriorEvent":3.000, "Actuator":"DUMMY", "ValueToBeSet": 3, "StringToPrint": "DUMMY EVENT 3"}])])
 
         print("Program_Dict: " + str(self.Program_Dict))
-        ##########################################
+        #########################################################
+        #########################################################
 
-       ##########################################
+        #########################################################
+        #########################################################
         if "MainThread_TimeToSleepEachLoop" in setup_dict:
             self.MainThread_TimeToSleepEachLoop = self.PassThroughFloatValuesInRange_ExitProgramOtherwise("MainThread_TimeToSleepEachLoop", setup_dict["MainThread_TimeToSleepEachLoop"], 0.001, 100000)
 
@@ -284,32 +316,34 @@ class ProgramOfTimeScheduledEvents_ReubenPython2and3Class(Frame): #Subclass the 
             self.MainThread_TimeToSleepEachLoop = 0.005
 
         print("MainThread_TimeToSleepEachLoop: " + str(self.MainThread_TimeToSleepEachLoop))
-        ##########################################
+        #########################################################
+        #########################################################
 
+        #########################################################
         #########################################################
         self.PrintToGui_Label_TextInputHistory_List = [" "]*self.NumberOfPrintLines
         self.PrintToGui_Label_TextInput_Str = ""
         self.GUI_ready_to_be_updated_flag = 0
         #########################################################
-
-        #########################################################
         #########################################################
 
         #########################################################
         #########################################################
-
-        ##########################################
         self.MainThread_ThreadingObject = threading.Thread(target=self.MainThread, args=())
         self.MainThread_ThreadingObject.start()
-        ##########################################
+        #########################################################
+        #########################################################
 
-        ##########################################
+        #########################################################
+        #########################################################
         if self.USE_GUI_FLAG == 1:
             self.StartGUI(self.root)
-        ##########################################
+        #########################################################
+        #########################################################
 
+        #########################################################
+        #########################################################
         self.OBJECT_CREATED_SUCCESSFULLY_FLAG = 1
-
         #########################################################
         #########################################################
 
@@ -580,28 +614,7 @@ class ProgramOfTimeScheduledEvents_ReubenPython2and3Class(Frame): #Subclass the 
 
                     self.EventsToFireQueue.put(EventToCheck)
 
-                    '''
-                    ###################################################
-                    ###################################################
-                    if EventToCheck["Actuator"] == "FOO":
-                        if EventToCheck["ValueToBeSet"] == 1:
-                           pass
-                        elif EventToCheck["ValueToBeSet"] == 0:
-                            pass
-                        else:
-                            pass
-                    ###################################################
-                    ###################################################
-    
-                    ###################################################
-                    ###################################################
-                    else:
-                        print("PROGRAM RAN INTO ERROR WHEN 'ACTUATOR' WAS NOT EXPECTED.")
-                    ###################################################
-                    ###################################################
-                    '''
-
-                    #self.MyPrint_WithoutLogFile("Program now executing Event: " + str(EventToCheck))
+                    self.MyPrint_WithoutLogFile("Program now executing Event: " + str(EventToCheck))
 
                     ###################################################
                     ###################################################
@@ -672,37 +685,29 @@ class ProgramOfTimeScheduledEvents_ReubenPython2and3Class(Frame): #Subclass the 
 
     ##########################################################################################################
     ##########################################################################################################
-    def StartGUI(self, GuiParent=None):
+    def StartGUI(self, GuiParent):
 
-        GUI_Thread_ThreadingObject = threading.Thread(target=self.GUI_Thread, args=(GuiParent,))
-        GUI_Thread_ThreadingObject.setDaemon(True) #Should mean that the GUI thread is destroyed automatically when the main thread is destroyed.
-        GUI_Thread_ThreadingObject.start()
+        self.GUI_Thread_ThreadingObject = threading.Thread(target=self.GUI_Thread, args=(GuiParent,))
+        self.GUI_Thread_ThreadingObject.setDaemon(True) #Should mean that the GUI thread is destroyed automatically when the main thread is destroyed.
+        self.GUI_Thread_ThreadingObject.start()
     ##########################################################################################################
     ##########################################################################################################
 
     ##########################################################################################################
     ##########################################################################################################
-    def GUI_Thread(self, parent=None):
+    def GUI_Thread(self, parent):
 
         print("Starting the GUI_Thread for ProgramOfTimeScheduledEvents_ReubenPython2and3Class object.")
 
-        ###################################################
-        if parent == None:  #This class object owns root and must handle it properly
-            self.root = Tk()
-            self.parent = self.root
+        ###########################################################
+        ###########################################################
+        self.root = parent
+        self.parent = parent
+        ###########################################################
+        ###########################################################
 
-            ################################################### SET THE DEFAULT FONT FOR ALL WIDGETS CREATED AFTTER/BELOW THIS CALL
-            default_font = tkFont.nametofont("TkDefaultFont")
-            default_font.configure(size=8)
-            self.root.option_add("*Font", default_font)
-            ###################################################
-
-        else:
-            self.root = parent
-            self.parent = parent
-        ###################################################
-
-        ###################################################
+        ###########################################################
+        ###########################################################
         self.myFrame = Frame(self.root)
 
         if self.UseBorderAroundThisGuiObjectFlag == 1:
@@ -716,56 +721,61 @@ class ProgramOfTimeScheduledEvents_ReubenPython2and3Class(Frame): #Subclass the 
                           rowspan = self.GUI_ROWSPAN,
                           columnspan = self.GUI_COLUMNSPAN,
                           sticky =self.GUI_STICKY)
-        ###################################################
+        ###########################################################
+        ###########################################################
 
-        ###################################################+
+        ###########################################################
+        ###########################################################
         self.TKinter_LightRedColor = '#%02x%02x%02x' % (255, 150, 150)  # RGB
         self.TKinter_LightGreenColor = '#%02x%02x%02x' % (150, 255, 150) #RGB
         self.TKinter_LightBlueColor = '#%02x%02x%02x' % (150, 150, 255)  # RGB
         self.TKinter_LightYellowColor = '#%02x%02x%02x' % (255, 255, 150)  # RGB
         self.TKinter_DefaultGrayColor = '#%02x%02x%02x' % (240, 240, 240)  # RGB
-        ###################################################
-
         self.ButtonWidth = 20
         self.ButtonFontSize = 18
-
         ###########################################################
         ###########################################################
 
-        ############################################
+        ###########################################################
+        ###########################################################
         self.PlayButtonGuiFrame = Frame(self.myFrame)
         self.PlayButtonGuiFrame.grid(row=0,column=0,padx=self.GUI_PADX,pady=self.GUI_PADY,columnspan=1,rowspan=1)
-        ############################################
+        ###########################################################
+        ###########################################################
 
-        ############################################
+        ###########################################################
+        ###########################################################
         self.PlayCurrentProgramFromBeginningOrPausedStateButton = Button(self.PlayButtonGuiFrame, text="Play Program", state="normal", width=self.ButtonWidth, command=lambda i=1: self.PlayCurrentProgramFromBeginningOrPausedStateButtonResponse())
         self.PlayCurrentProgramFromBeginningOrPausedStateButton.grid(row=0, column=0, padx=self.GUI_PADX, pady=self.GUI_PADY, columnspan=1, rowspan=1)
         self.PlayCurrentProgramFromBeginningOrPausedStateButton.config(font=("Helvetica", self.ButtonFontSize, "bold"))
         self.PlayCurrentProgramFromBeginningOrPausedStateButton.config(bg = self.TKinter_LightGreenColor)
-        ############################################
+        ###########################################################
+        ###########################################################
 
-         ###################################################
+        ###########################################################
+        ###########################################################
         self.PlayProgramFromThisStartingIndexIntoEventsList_EntryLabel = Label(self.PlayButtonGuiFrame, text="Starting Index", width=2*self.ButtonWidth, font=("Helvetica", 10))
         self.PlayProgramFromThisStartingIndexIntoEventsList_EntryLabel.grid(row=0, column=1, padx=self.GUI_PADX, pady=self.GUI_PADY, columnspan=1, rowspan=1, sticky='w')
 
         self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_TextContent_NeedsToBeUpdatedFlag = 0
 
-        self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_TextContent=[]
-        self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_TextContent.insert(int(0), StringVar())
+        self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_StringVar = StringVar()
 
         self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_TextInputBox = Entry(self.PlayButtonGuiFrame,
                                             font=("Helvetica", int(8)),
                                             state="normal",
                                             width=self.ButtonWidth,
-                                            textvariable=self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_TextContent[0],
+                                            textvariable=self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_StringVar,
                                             justify='center')
 
-        self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_TextContent[0].set(self.PlayProgramFromThisStartingIndexIntoEventsList)
+        self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_StringVar.set(str(self.PlayProgramFromThisStartingIndexIntoEventsList))
         self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_TextInputBox.grid(row=0, column=2, padx=self.GUI_PADX, pady=self.GUI_PADY, columnspan=1, rowspan=1, sticky='w')
         self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_TextInputBox.bind('<Return>', lambda event: self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_EventResponse(event))
-        ###################################################
+        ###########################################################
+        ###########################################################
 
-        ###################################################
+        ###########################################################
+        ###########################################################
         self.StepThroughProgramPausingBetweenEventsFlag_Checkbutton_Value = DoubleVar()
 
         self.StepThroughProgramPausingBetweenEventsFlag_Checkbutton = Checkbutton(self.PlayButtonGuiFrame,
@@ -781,8 +791,6 @@ class ProgramOfTimeScheduledEvents_ReubenPython2and3Class(Frame): #Subclass the 
 
         if self.StepThroughProgramPausingBetweenEventsFlag == 1:
             self.StepThroughProgramPausingBetweenEventsFlag_Checkbutton.select()
-        ###################################################
-
         ###########################################################
         ###########################################################
 
@@ -792,8 +800,8 @@ class ProgramOfTimeScheduledEvents_ReubenPython2and3Class(Frame): #Subclass the 
         self.PauseRunningCurrentProgramButton.grid(row=1, column=0, padx=self.GUI_PADX, pady=self.GUI_PADY, columnspan=1, rowspan=1, sticky='w')
         self.PauseRunningCurrentProgramButton.config(font=("Helvetica", self.ButtonFontSize, "bold"))
         self.PauseRunningCurrentProgramButton.config(bg=self.TKinter_LightBlueColor)
-        ############################################
-        ############################################
+        ###########################################################
+        ###########################################################
 
         ###########################################################
         ###########################################################
@@ -804,50 +812,41 @@ class ProgramOfTimeScheduledEvents_ReubenPython2and3Class(Frame): #Subclass the 
         ###########################################################
         ###########################################################
 
-        ############################################
-        ############################################
+        ###########################################################
+        ###########################################################
         self.ProgramInfoHUGEfontGuiLabel = Label(self.myFrame, text="ProgramInfoHUGEfontGuiLabel", width=80, font=("Helvetica", int(14), "bold"))
         self.ProgramInfoHUGEfontGuiLabel.grid(row=0, column=1, padx=self.GUI_PADX, pady=self.GUI_PADY, columnspan=1, rowspan=1)
-        ############################################
-        ############################################
+        ###########################################################
+        ###########################################################
 
-        ############################################
-        ############################################
+        ###########################################################
+        ###########################################################
         self.ProgramInfoGuiLabel = Label(self.myFrame, text="ProgramInfoGuiLabel", width=80, font=("Helvetica", int(10)))
         self.ProgramInfoGuiLabel.grid(row=1, column=1, padx=self.GUI_PADX, pady=self.GUI_PADY, columnspan=1, rowspan=3)
-        ############################################
-        ############################################
+        ###########################################################
+        ###########################################################
 
-        ############################################
-        ############################################
+        ###########################################################
+        ###########################################################
         self.PausedStatesAndValuesInfoGuiLabel = Label(self.myFrame, text="PausedStatesAndValuesInfoGuiLabel", width=50, font=("Helvetica", int(10)))
         self.PausedStatesAndValuesInfoGuiLabel.grid(row=0, column=2, padx=self.GUI_PADX, pady=self.GUI_PADY, columnspan=1, rowspan=1)
-        ############################################
-        ############################################
+        ###########################################################
+        ###########################################################
 
-        ########################
+        ###########################################################
+        ###########################################################
         self.PrintToGui_Label = Label(self.myFrame, text="PrintToGui_Label", width=75)
         print("$$$$$$$$$$ EnableInternal_MyPrint_Flag: " + str(self.EnableInternal_MyPrint_Flag))
         if self.EnableInternal_MyPrint_Flag == 1:
             self.PrintToGui_Label.grid(row=10, column=0, padx=self.GUI_PADX, pady=self.GUI_PADY, columnspan=1, rowspan=10)
-        ########################
+        ###########################################################
+        ###########################################################
 
-        ########################
-        if self.RootIsOwnedExternallyFlag == 0: #This class object owns root and must handle it properly
-            self.root.protocol("WM_DELETE_WINDOW", self.ExitProgram_Callback)
-
-            self.root.after(self.GUI_RootAfterCallbackInterval_Milliseconds, self.GUI_update_clock)
-            self.GUI_ready_to_be_updated_flag = 1
-            self.root.mainloop()
-        else:
-            self.GUI_ready_to_be_updated_flag = 1
-        ########################
-
-        ########################
-        if self.RootIsOwnedExternallyFlag == 0: #This class object owns root and must handle it properly
-            self.root.quit()  # Stop the GUI thread, MUST BE CALLED FROM GUI_Thread
-            self.root.destroy()  # Close down the GUI thread, MUST BE CALLED FROM GUI_Thread
-        ########################
+        ###########################################################
+        ###########################################################
+        self.GUI_ready_to_be_updated_flag = 1
+        ###########################################################
+        ###########################################################
 
     ##########################################################################################################
     ##########################################################################################################
@@ -887,7 +886,7 @@ class ProgramOfTimeScheduledEvents_ReubenPython2and3Class(Frame): #Subclass the 
                     #########################################################
                     #########################################################
                     if self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_TextContent_NeedsToBeUpdatedFlag == 1:
-                        self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_TextContent[0].set(self.PlayProgramFromThisStartingIndexIntoEventsList)
+                        self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_StringVar.set(str(self.PlayProgramFromThisStartingIndexIntoEventsList))
                         self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_TextContent_NeedsToBeUpdatedFlag = 0
                     #########################################################
                     #########################################################
@@ -946,13 +945,6 @@ class ProgramOfTimeScheduledEvents_ReubenPython2and3Class(Frame): #Subclass the 
                     exceptions = sys.exc_info()[0]
                     print("ProgramOfTimeScheduledEvents_ReubenPython2and3Class GUI_update_clock ERROR: Exceptions: %s" % exceptions)
                     traceback.print_exc()
-                #######################################################
-                #######################################################
-
-                #######################################################
-                #######################################################
-                if self.RootIsOwnedExternallyFlag == 0:  # This class object owns root and must handle it properly
-                    self.root.after(self.GUI_RootAfterCallbackInterval_Milliseconds, self.GUI_update_clock)
                 #######################################################
                 #######################################################
 
@@ -1124,9 +1116,9 @@ class ProgramOfTimeScheduledEvents_ReubenPython2and3Class(Frame): #Subclass the 
     def PlayProgramFromThisStartingIndexIntoEventsList_Entry_EventResponse(self, event = None):
 
         try:
-            PlayProgramFromThisStartingIndexIntoEventsList_TEMP = self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_TextContent[0].get()
+            PlayProgramFromThisStartingIndexIntoEventsList_TEMP = self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_StringVar.get()
 
-            self.PlayProgramFromThisStartingIndexIntoEventsList = self.LimitTextEntryInput_IntOutputOnly(0.0, 5000.0, PlayProgramFromThisStartingIndexIntoEventsList_TEMP, self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_TextContent[0])
+            self.PlayProgramFromThisStartingIndexIntoEventsList = self.LimitTextEntryInput_IntOutputOnly(0.0, 5000.0, PlayProgramFromThisStartingIndexIntoEventsList_TEMP, self.PlayProgramFromThisStartingIndexIntoEventsList_Entry_StringVar)
 
             self.MyPrint_WithoutLogFile("PlayProgramFromThisStartingIndexIntoEventsList entry input: " + str(self.PlayProgramFromThisStartingIndexIntoEventsList))
 

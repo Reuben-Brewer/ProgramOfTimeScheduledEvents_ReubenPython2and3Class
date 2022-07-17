@@ -6,22 +6,29 @@ reuben.brewer@gmail.com
 www.reubotics.com
 
 Apache 2 License
-Software Revision D, 03/13/2022
+Software Revision E, 07/16/2022
 
 Verified working on: Python 2.7, 3.8 for Windows 8.1, 10 64-bit and Raspberry Pi Buster (no Mac testing yet).
 '''
 
 __author__ = 'reuben.brewer'
 
+#########################################################
 from ProgramOfTimeScheduledEvents_ReubenPython2and3Class import *
 from MyPrint_ReubenPython2and3Class import *
+#########################################################
 
-import os, sys, platform
-import time, datetime
+#########################################################
+import os
+import sys
+import platform
+import time
+import datetime
 import threading
 import collections
+#########################################################
 
-###############
+#########################################################
 if sys.version_info[0] < 3:
     from Tkinter import * #Python 2
     import tkFont
@@ -30,22 +37,22 @@ else:
     from tkinter import * #Python 3
     import tkinter.font as tkFont #Python 3
     from tkinter import ttk
-###############
+#########################################################
 
-###############
+#########################################################
 if sys.version_info[0] < 3:
     from builtins import raw_input as input
 else:
     from future.builtins import input as input #"sudo pip3 install future" (Python 3) AND "sudo pip install future" (Python 2)
-###############
+#########################################################
 
-###############
+#########################################################
 import platform
 if platform.system() == "Windows":
     import ctypes
     winmm = ctypes.WinDLL('winmm')
     winmm.timeBeginPeriod(1) #Set minimum timer resolution to 1ms so that time.sleep(0.001) behaves properly.
-###############
+#########################################################
 
 ###########################################################################################################
 ##########################################################################################################
@@ -146,11 +153,11 @@ def GUI_Thread():
         #################################################
         TabControlObject = ttk.Notebook(root)
 
-        Tab_MainControls = ttk.Frame(TabControlObject)
-        TabControlObject.add(Tab_MainControls, text='   Main Controls   ')
-
         Tab_ProgramOfTimeScheduledEvents = ttk.Frame(TabControlObject)
         TabControlObject.add(Tab_ProgramOfTimeScheduledEvents, text='   ProgramOfTimeScheduledEvents   ')
+
+        Tab_MainControls = ttk.Frame(TabControlObject)
+        TabControlObject.add(Tab_MainControls, text='   Main Controls   ')
 
         Tab_MyPrint = ttk.Frame(TabControlObject)
         TabControlObject.add(Tab_MyPrint, text='   MyPrint Terminal   ')
@@ -227,7 +234,7 @@ if __name__ == '__main__':
     USE_GUI_FLAG = 1
 
     global USE_TABS_IN_GUI_FLAG
-    USE_TABS_IN_GUI_FLAG = 0
+    USE_TABS_IN_GUI_FLAG = 1
 
     global USE_ProgramOfTimeScheduledEvents_FLAG
     USE_ProgramOfTimeScheduledEvents_FLAG = 1
